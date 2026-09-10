@@ -8,8 +8,8 @@
 *.appx
 *.appxbundle
 *.arj
-*.bat
 *.bash
+*.bat
 *.bz2
 *.cab
 *.chm
