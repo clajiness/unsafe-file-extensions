@@ -1,0 +1,63 @@
+name: Validate blocklist
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate blocklist
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Validate blocklist
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          file="blocklist.txt"
+
+          if [[ ! -s "$file" ]]; then
+            echo "::error::$file is missing or empty"
+            exit 1
+          fi
+
+          echo "Checking pattern format..."
+
+          invalid="$(grep -nEv '^\*\.[a-z0-9_]+(\.[a-z0-9_]+)*$' "$file" || true)"
+
+          if [[ -n "$invalid" ]]; then
+            echo "::error::Invalid patterns found:"
+            echo "$invalid"
+            exit 1
+          fi
+
+          echo "Checking alphabetical order..."
+
+          if ! diff -u "$file" <(LC_ALL=C sort "$file"); then
+            echo "::error::$file is not alphabetically sorted"
+            exit 1
+          fi
+
+          echo "Checking for duplicates..."
+
+          duplicates="$(LC_ALL=C sort "$file" | uniq -d)"
+
+          if [[ -n "$duplicates" ]]; then
+            echo "::error::Duplicate patterns found:"
+            echo "$duplicates"
+            exit 1
+          fi
+
+          echo "blocklist.txt is valid."
