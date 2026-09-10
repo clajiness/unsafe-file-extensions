@@ -36,6 +36,17 @@ This does not imply that every file type listed here is inherently malicious.
 Some formats, such as archives and disk images, are included because they
 require additional processing or can conceal executable content.
 
+## Usage
+
+The blocklist is available as a raw text file:
+
+```text
+https://raw.githubusercontent.com/clajiness/unsafe-file-extensions/main/blocklist.txt
+```
+
+The file contains one wildcard pattern per line and can be consumed by applications
+that support remotely hosted blocklists.
+
 ## License
 
 CC0 1.0 Universal
